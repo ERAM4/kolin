@@ -28,6 +28,10 @@ import kotlinx.coroutines.flow.collectLatest
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        /*
+         * prueba 1
+         * funciones de git ya implementadas
+         */
 
         setContent {
             TeacherStoreTheme{
