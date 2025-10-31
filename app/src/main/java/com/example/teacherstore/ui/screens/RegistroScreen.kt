@@ -1,6 +1,5 @@
 package com.example.teacherstore.ui.screens
 
-import android.R
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,32 +10,34 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.teacherstore.navigation.AppRoute
+import com.example.teacherstore.viewmodel.MainViewModel
 import com.example.teacherstore.viewmodel.UsuarioViewModel
 
 
 @Composable
 fun RegistroScreen(
 
-    viewModel: UsuarioViewModel,
+    mainViewModel: MainViewModel = viewModel(),
+    userViewModel: UsuarioViewModel = viewModel(),
     navController: NavController
 ){
-    val estado by viewModel.estado.collectAsState()
+    val estado by userViewModel.estado.collectAsState()
     Scaffold(
         containerColor = Color.White, // Set your desired background color here
         content = { paddingValues ->
@@ -55,7 +56,7 @@ fun RegistroScreen(
                 Text(estado.nombre)
                 OutlinedTextField(
                     value = estado.nombre,
-                    onValueChange = viewModel::onNombreChange,
+                    onValueChange = userViewModel::onNombreChange,
                     label = {Text("Nombre")},
                     isError = estado.errores.nombre!=null,
                     singleLine = true,
@@ -72,7 +73,7 @@ fun RegistroScreen(
                 //campo para el correo
                 OutlinedTextField(
                     value = estado.correo,
-                    onValueChange = viewModel::onCorreoChange,
+                    onValueChange = userViewModel::onCorreoChange,
                     label = {Text("Email")},
                     isError = estado.errores.correo!=null,
                     singleLine = true,
@@ -89,7 +90,7 @@ fun RegistroScreen(
 
                 OutlinedTextField(
                     value = estado.contrasena,
-                    onValueChange = viewModel::onContrasenaChange,
+                    onValueChange = userViewModel::onContrasenaChange,
                     label = {Text("Contraseña")},
                     isError = estado.errores.contrasena!=null,
                     visualTransformation = PasswordVisualTransformation(),
@@ -105,7 +106,7 @@ fun RegistroScreen(
 
                 OutlinedTextField(
                     value = estado.direccion,
-                    onValueChange = viewModel::onDireccionChange,
+                    onValueChange = userViewModel::onDireccionChange,
                     label = {Text("Dirección")},
                     isError = estado.errores.direccion!=null,
                     singleLine = true,
@@ -122,7 +123,7 @@ fun RegistroScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = estado.aceptaTerminos,
-                        onCheckedChange = viewModel::onAceptarTerminosChange
+                        onCheckedChange = userViewModel::onAceptarTerminosChange
                     )
                     Spacer(Modifier.width(8.dp))
                     Text("Acepto los términos y condiciones")
@@ -130,7 +131,7 @@ fun RegistroScreen(
                 }
                 Button(
                     onClick = {
-                        if (viewModel.estaValidadoElFormulario() && estado.aceptaTerminos) {
+                        if (userViewModel.estaValidadoElFormulario() && estado.aceptaTerminos) {
                             //El nav controller debería ir a la pantalla de resumen
                             navController.navigate(AppRoute.Home.route)
 
@@ -140,6 +141,10 @@ fun RegistroScreen(
 
                 ) {
                     Text("Registrar")
+                }
+
+                TextButton(onClick = {navController.navigate(AppRoute.Login.route)}) {
+                    Text(text = "¿Ya tienes cuenta? Iniciar sesión")
                 }
 
             }

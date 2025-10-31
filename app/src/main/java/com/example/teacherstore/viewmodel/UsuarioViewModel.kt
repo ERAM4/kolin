@@ -2,6 +2,7 @@ package com.example.teacherstore.viewmodel
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import com.example.teacherstore.model.LoginUIState
 import com.example.teacherstore.model.UsuarioErrores
 import com.example.teacherstore.model.UsuarioUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class UsuarioViewModel: ViewModel() {
+
+    private val _loginState = MutableStateFlow(LoginUIState())
+    val loginState: StateFlow<LoginUIState> = _loginState
+
 
     //declaramos el estado interno mutable
     private val _estado= MutableStateFlow(UsuarioUiState())
@@ -36,6 +41,16 @@ class UsuarioViewModel: ViewModel() {
     fun onAceptarTerminosChange(nuevoAceptarTerminos: Boolean){
         _estado.update { it.copy(aceptaTerminos = nuevoAceptarTerminos) }
     }
+
+    fun onNameChangeLogin(newValue:String){
+        _loginState.update { it.copy(name = newValue) }
+    }
+
+    fun onPasswordChangeLogin(newValue:String){
+        _loginState.update { it.copy(password = newValue) }
+    }
+
+
 
     //validacion global del formulario
 

@@ -16,6 +16,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.teacherstore.navigation.AppRoute
 import com.example.teacherstore.navigation.NavigationEvent
 import com.example.teacherstore.ui.screens.HomeScreen
+import com.example.teacherstore.ui.screens.LoginScreen
+import com.example.teacherstore.ui.screens.MainScreen
 import com.example.teacherstore.ui.screens.ProfileScreen
 import com.example.teacherstore.ui.screens.RegistroScreen
 import com.example.teacherstore.ui.theme.TeacherStoreTheme
@@ -35,8 +37,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TeacherStoreTheme{
-                val viewModel: MainViewModel= viewModel()
-                val viewModelRegistro: UsuarioViewModel=viewModel()
+                val mainViewModel: MainViewModel= viewModel()
+                val usuarioViewModel: UsuarioViewModel=viewModel()
                 val navController = rememberNavController()
 
                 /**La función LaunchedEffect en Jetpack Compose se usa para ejecutar
@@ -51,7 +53,7 @@ class MainActivity : ComponentActivity() {
                  * */
                 LaunchedEffect(Unit) {
 
-                    viewModel.navEvents.collectLatest {
+                    mainViewModel.navEvents.collectLatest {
                         event ->
                         when(event){
                             is NavigationEvent.NavigateTo ->{
@@ -97,21 +99,27 @@ class MainActivity : ComponentActivity() {
                     innerPadding ->
                     NavHost(
                         navController=navController,
-                        startDestination = AppRoute.Register.route,
+                        startDestination = AppRoute.Main.route,
                         modifier = Modifier.padding(innerPadding)
 
                     ){
                         composable(AppRoute.Home.route) {
-                            HomeScreen(viewModel,navController)
+                            HomeScreen(mainViewModel,navController)
                         }
                         composable(AppRoute.Register.route) {
-                            RegistroScreen(viewModelRegistro,navController)
+                            RegistroScreen(mainViewModel,usuarioViewModel,navController)
                         }
                         composable(AppRoute.Profile.route) {
-                            ProfileScreen(viewModel,navController)
+                            ProfileScreen(mainViewModel,navController)
                         }
                         composable(AppRoute.Settings.route) {
                             //SettingScreen(navController,viewModel)
+                        }
+                        composable(AppRoute.Main.route){
+                            MainScreen(mainViewModel, navController)
+                        }
+                        composable(AppRoute.Login.route){
+                            LoginScreen(mainViewModel,usuarioViewModel,navController)
                         }
                     }
                 }

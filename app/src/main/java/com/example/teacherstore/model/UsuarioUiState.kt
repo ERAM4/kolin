@@ -1,6 +1,11 @@
 package com.example.teacherstore.model
 
 //Este modelo de datos será actualizado por el viewmodel
+
+data class LoginUIState(
+    val name: String="",
+    val password: String=""
+)
 data class UsuarioUiState(
     val nombre: String="",
     val correo: String="",

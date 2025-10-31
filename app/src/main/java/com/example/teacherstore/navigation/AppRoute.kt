@@ -6,6 +6,10 @@ sealed class AppRoute(val route:String) {
     data object Profile: AppRoute("profile")
     data object Settings: AppRoute("settings")
 
+    data object Main: AppRoute("main")
+    data object Login: AppRoute("login")
+    data object Shop: AppRoute("shop")
+
     data class Detail (val itemId:String): AppRoute("detail/{itemId}")
     {
         fun buildRoute():String{
