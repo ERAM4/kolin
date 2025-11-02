@@ -2,15 +2,17 @@ package com.example.teacherstore.viewmodel
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.teacherstore.model.LoginUIState
 import com.example.teacherstore.model.UsuarioErrores
 import com.example.teacherstore.model.UsuarioUiState
+import com.example.teacherstore.model.database.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 import kotlinx.coroutines.flow.update
 
-class UsuarioViewModel: ViewModel() {
+class UsuarioViewModel(userRepository: UserRepository) : ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginUIState())
     val loginState: StateFlow<LoginUIState> = _loginState
@@ -80,9 +82,17 @@ class UsuarioViewModel: ViewModel() {
         //return !hayErrores
 
 
+    }
 
+    class UsuarioViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory{
 
-
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(UsuarioViewModel::class.java)){
+                @Suppress("UNCHECKED_CAST")
+                return UsuarioViewModel(userRepository) as T
+            }
+            throw IllegalArgumentException("Ni modo flaco no esta la vista del modelo")
+        }
     }
 
 

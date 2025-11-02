@@ -13,6 +13,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.teacherstore.model.database.UserDataBase
+import com.example.teacherstore.model.database.repository.UserRepository
 import com.example.teacherstore.navigation.AppRoute
 import com.example.teacherstore.navigation.NavigationEvent
 import com.example.teacherstore.ui.screens.HomeScreen
@@ -38,8 +40,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             TeacherStoreTheme{
                 val mainViewModel: MainViewModel= viewModel()
-                val usuarioViewModel: UsuarioViewModel=viewModel()
                 val navController = rememberNavController()
+
+                val  userDataBase = UserDataBase.getDataBase(this)
+                val userRepository = UserRepository(userDataBase.userDao())
+                val userFactory = UsuarioViewModel.UsuarioViewModelFactory(userRepository)
+                val usuarioViewModel: UsuarioViewModel = viewModel(factory = userFactory)
+                //val usuarioViewModel: UsuarioViewModel=viewModel()
 
                 /**La función LaunchedEffect en Jetpack Compose se usa para ejecutar
                  * efectos secundarios (side effects) en un entorno seguro y
@@ -123,7 +130,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
             }
         }
     }
