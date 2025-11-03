@@ -3,16 +3,23 @@ package com.example.teacherstore.viewmodel
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.teacherstore.model.LoginUIState
 import com.example.teacherstore.model.UsuarioErrores
 import com.example.teacherstore.model.UsuarioUiState
+import com.example.teacherstore.model.database.User
 import com.example.teacherstore.model.database.repository.UserRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class UsuarioViewModel(userRepository: UserRepository) : ViewModel() {
+class UsuarioViewModel(private val userRepository: UserRepository) : ViewModel() {
+
+    val allClients = userRepository.allUsers
 
     private val _loginState = MutableStateFlow(LoginUIState())
     val loginState: StateFlow<LoginUIState> = _loginState
@@ -76,8 +83,7 @@ class UsuarioViewModel(userRepository: UserRepository) : ViewModel() {
 
         _estado.update { it.copy(errores=errores) }
 
-        return if(hayErrores) false
-        else true
+        return !hayErrores
 
         //return !hayErrores
 
@@ -95,6 +101,19 @@ class UsuarioViewModel(userRepository: UserRepository) : ViewModel() {
         }
     }
 
+    fun insertUser(user: User) = viewModelScope.launch{
+        userRepository.insertUser(user)
+    }
 
+    fun deleteClient(user: User) = viewModelScope.launch {
+        userRepository.deleteUser(user) // Asumiendo que tienes una función deleteUser en tu repositorio
+    }
+
+    suspend fun userExist(email: String, password: String): Boolean {
+        val users = allClients.first()
+        return users.any { user ->
+            user.email == email && user.password == password
+        }
+    }
 
 }

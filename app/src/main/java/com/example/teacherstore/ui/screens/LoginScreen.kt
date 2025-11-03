@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
@@ -22,6 +23,7 @@ import androidx.navigation.NavController
 import com.example.teacherstore.navigation.AppRoute
 import com.example.teacherstore.viewmodel.MainViewModel
 import com.example.teacherstore.viewmodel.UsuarioViewModel
+import kotlinx.coroutines.launch
 import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,6 +35,7 @@ fun LoginScreen(
 ){
 
     val estado by usuarioViewModel.loginState.collectAsState()
+    val coroutine = rememberCoroutineScope()
 
     Scaffold (){innerPadding->
         Column (horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,7 +80,12 @@ fun LoginScreen(
             }
 
             Button(onClick = {
-                println("hola")
+                coroutine.launch {
+                    if (usuarioViewModel.userExist(email = estado.name, password = estado.password)
+                    ) {
+                        navController.navigate(AppRoute.Home.route)
+                    }
+                }
             }) {
                 Text("Login")
             }

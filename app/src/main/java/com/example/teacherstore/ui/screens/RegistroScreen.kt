@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.teacherstore.model.database.User
 import com.example.teacherstore.navigation.AppRoute
 import com.example.teacherstore.viewmodel.MainViewModel
 import com.example.teacherstore.viewmodel.UsuarioViewModel
@@ -34,10 +35,10 @@ import com.example.teacherstore.viewmodel.UsuarioViewModel
 fun RegistroScreen(
 
     mainViewModel: MainViewModel = viewModel(),
-    userViewModel: UsuarioViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = viewModel(),
     navController: NavController
 ){
-    val estado by userViewModel.estado.collectAsState()
+    val estado by usuarioViewModel.estado.collectAsState()
     Scaffold(
         containerColor = Color.White, // Set your desired background color here
         content = { paddingValues ->
@@ -56,7 +57,7 @@ fun RegistroScreen(
                 Text(estado.nombre)
                 OutlinedTextField(
                     value = estado.nombre,
-                    onValueChange = userViewModel::onNombreChange,
+                    onValueChange = usuarioViewModel::onNombreChange,
                     label = {Text("Nombre")},
                     isError = estado.errores.nombre!=null,
                     singleLine = true,
@@ -73,7 +74,7 @@ fun RegistroScreen(
                 //campo para el correo
                 OutlinedTextField(
                     value = estado.correo,
-                    onValueChange = userViewModel::onCorreoChange,
+                    onValueChange = usuarioViewModel::onCorreoChange,
                     label = {Text("Email")},
                     isError = estado.errores.correo!=null,
                     singleLine = true,
@@ -90,7 +91,7 @@ fun RegistroScreen(
 
                 OutlinedTextField(
                     value = estado.contrasena,
-                    onValueChange = userViewModel::onContrasenaChange,
+                    onValueChange = usuarioViewModel::onContrasenaChange,
                     label = {Text("Contraseña")},
                     isError = estado.errores.contrasena!=null,
                     visualTransformation = PasswordVisualTransformation(),
@@ -106,7 +107,7 @@ fun RegistroScreen(
 
                 OutlinedTextField(
                     value = estado.direccion,
-                    onValueChange = userViewModel::onDireccionChange,
+                    onValueChange = usuarioViewModel::onDireccionChange,
                     label = {Text("Dirección")},
                     isError = estado.errores.direccion!=null,
                     singleLine = true,
@@ -123,24 +124,21 @@ fun RegistroScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = estado.aceptaTerminos,
-                        onCheckedChange = userViewModel::onAceptarTerminosChange
+                        onCheckedChange = usuarioViewModel::onAceptarTerminosChange
                     )
                     Spacer(Modifier.width(8.dp))
                     Text("Acepto los términos y condiciones")
 
                 }
-                Button(
-                    onClick = {
-                        if (userViewModel.estaValidadoElFormulario() && estado.aceptaTerminos) {
-                            //El nav controller debería ir a la pantalla de resumen
-                            navController.navigate(AppRoute.Home.route)
-
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-
-                ) {
-                    Text("Registrar")
+                Button(onClick = {if (usuarioViewModel.estaValidadoElFormulario() && estado.aceptaTerminos){
+                    //Inserccion a la base de datos
+                    usuarioViewModel.insertUser(User(name = estado.nombre,
+                                                    email = estado.correo,
+                                                    password = estado.contrasena))
+                    //Redirección a login para que se registre
+                    navController.navigate(AppRoute.Login.route)
+                } }) {
+                    Text(text = "Registrarse")
                 }
 
                 TextButton(onClick = {navController.navigate(AppRoute.Login.route)}) {
