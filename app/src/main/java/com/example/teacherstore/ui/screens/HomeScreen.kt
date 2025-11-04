@@ -93,9 +93,15 @@ fun HomeScreen(
 
             ){
                 Text("Bienvenido a la página  de Inicio")
+                Text("A la izquierda estan las opciones disponibles")
                 Spacer(modifier=Modifier.height(16.dp))
-                Button(onClick = {viewModel.navigateTo(AppRoute.Settings)}) {
-
+                Button(onClick = {viewModel.navigateTo(AppRoute.Profile)}) {
+                    Text("Perfil")
+                }
+                Button(onClick = {
+                    viewModel.navigateTo(AppRoute.Catalog)
+                }) {
+                    Text("Catalogo")
                 }
 
 

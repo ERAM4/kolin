@@ -34,14 +34,14 @@ fun MainScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Welcum to Level Up-gamer!")
+            Text("Bienvenido a Level Up-gamer!")
 
             Spacer(modifier = Modifier.height(16.dp)) // Añade espacio
 
             Button(onClick = {
                 viewModel.navigateTo(AppRoute.Login)
             }) {
-                Text("Ir al login")
+                Text("Iniciar sesion")
             }
 
             Spacer(modifier = Modifier.height(8.dp)) // Añade espacio
@@ -49,19 +49,8 @@ fun MainScreen(
             Button(onClick = {
                 viewModel.navigateTo(AppRoute.Register)
             }) {
-                Text("Ir al registro")
+                Text("Registrarse")
             }
-
-            Spacer(modifier = Modifier.height(8.dp)) // Añade espacio
-
-            // --- BOTÓN PARA IR AL CATÁLOGO ---
-            Button(onClick = {
-
-                viewModel.navigateTo(AppRoute.Catalog)
-            }) {
-                Text("Ver Catálogo")
-            }
-            // ------------------------------------
         }
     }
 }

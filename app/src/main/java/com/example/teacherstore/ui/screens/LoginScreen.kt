@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,7 +46,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = estado.name,
                 onValueChange = usuarioViewModel::onNameChangeLogin,
-                label = {Text("Nombre")},
+                label = {Text("Correo electronico")},
                 //isError = estado.errores.nombre!=null,
                 singleLine = true,
                 supportingText = {
@@ -66,19 +67,11 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Button(onClick = {
-                viewModel.navigateTo(AppRoute.Register)
+            TextButton(onClick = {
+                navController.navigate(AppRoute.Home.route)
+            }) {
+                Text("¿No tienes una cuenta? ¡Crea una!")
             }
-            ) {
-                Text("Go to register")
-            }
-            Button(onClick = {
-                viewModel.navigateTo(AppRoute.Main)
-            }
-            ) {
-                Text("Go to main")
-            }
-
             Button(onClick = {
                 coroutine.launch {
                     if (usuarioViewModel.userExist(email = estado.name, password = estado.password)
@@ -87,7 +80,7 @@ fun LoginScreen(
                     }
                 }
             }) {
-                Text("Login")
+                Text("Iniciar sesion")
             }
         }
 
