@@ -42,9 +42,15 @@ class UsuarioViewModel(private val userRepository: UserRepository) : ViewModel()
     fun onContrasenaChange(nuevaContrasena:String){
         _estado.update { it.copy(contrasena = nuevaContrasena, errores = it.errores.copy(contrasena =null)) }
     }
+    fun onRepetirContrasenaChange(repetirContrasena:String){
+        _estado.update { it.copy(repetirContrasena = repetirContrasena, errores = it.errores.copy(repetirContrasena =null)) }
+    }
 
     fun onDireccionChange(nuevaDireccion:String){
         _estado.update { it.copy(direccion = nuevaDireccion, errores = it.errores.copy(direccion =null)) }
+    }
+    fun onPaisChange(pais:String){
+        _estado.update { it.copy(pais = pais, errores = it.errores.copy(pais =null)) }
     }
 
     fun onAceptarTerminosChange(nuevoAceptarTerminos: Boolean){
@@ -69,8 +75,10 @@ class UsuarioViewModel(private val userRepository: UserRepository) : ViewModel()
         val errores= UsuarioErrores(
             nombre = if(formularioActual.nombre.isBlank()) "El campo es obligatorio" else null,
             correo = if(!Patterns.EMAIL_ADDRESS.matcher(formularioActual.correo).matches()) "El correo debe ser valido" else null,
+            repetirContrasena = if(formularioActual.contrasena == formularioActual.repetirContrasena)  null else "Las contraseñas no coinciden",
             contrasena= if(formularioActual.contrasena.length <6)"La contraseña debe tener al menos 6 caracteres" else null,
             direccion = if(formularioActual.direccion.isBlank()) "El campo es obligatorio" else null,
+            pais = if(formularioActual.pais.isBlank()) "El campo es obligatorio" else null,
         )
 
         //listOfNotNull retorna una lista de los elementos que "no sean nulos"
@@ -78,6 +86,8 @@ class UsuarioViewModel(private val userRepository: UserRepository) : ViewModel()
             errores.nombre,
             errores.correo,
             errores.contrasena,
+            errores.repetirContrasena,
+            errores.pais,
             errores.direccion
         ).isNotEmpty()//retorna true si la coleccion no esta vacia
 

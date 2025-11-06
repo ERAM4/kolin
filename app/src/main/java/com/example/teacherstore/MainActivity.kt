@@ -13,10 +13,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.teacherstore.model.database.ProductDataBase
 import com.example.teacherstore.model.database.UserDataBase
+import com.example.teacherstore.model.database.repository.ProductRepository
 import com.example.teacherstore.model.database.repository.UserRepository
 import com.example.teacherstore.navigation.AppRoute
 import com.example.teacherstore.navigation.NavigationEvent
+import com.example.teacherstore.ui.screens.CartScreen
+
 import com.example.teacherstore.ui.screens.HomeScreen
 import com.example.teacherstore.ui.screens.LoginScreen
 import com.example.teacherstore.ui.screens.CatalogScreen
@@ -25,6 +29,7 @@ import com.example.teacherstore.ui.screens.ProfileScreen
 import com.example.teacherstore.ui.screens.RegistroScreen
 import com.example.teacherstore.ui.theme.TeacherStoreTheme
 import com.example.teacherstore.viewmodel.MainViewModel
+import com.example.teacherstore.viewmodel.ProductViewModel
 import com.example.teacherstore.viewmodel.UsuarioViewModel
 import kotlinx.coroutines.flow.collectLatest
 
@@ -47,6 +52,13 @@ class MainActivity : ComponentActivity() {
                 val userRepository = UserRepository(userDataBase.userDao())
                 val userFactory = UsuarioViewModel.UsuarioViewModelFactory(userRepository)
                 val usuarioViewModel: UsuarioViewModel = viewModel(factory = userFactory)
+
+                val productDataBase = ProductDataBase.getDataBase(this)
+                val productRepository = ProductRepository(productDataBase.productDao())
+                val productFactory = ProductViewModel.DataProductViewModelFactory(productRepository)
+                val productViewModel: ProductViewModel = viewModel(factory = productFactory)
+
+
                 //val usuarioViewModel: UsuarioViewModel=viewModel()
 
                 /**La función LaunchedEffect en Jetpack Compose se usa para ejecutar
@@ -132,7 +144,10 @@ class MainActivity : ComponentActivity() {
 
                         }
                         composable(AppRoute.Catalog.route) {
-                            CatalogScreen(navController = navController)
+                            CatalogScreen(navController = navController, mainViewModel = mainViewModel, productViewModel = productViewModel)
+                        }
+                        composable(AppRoute.Cart.route) {
+                            CartScreen(navController = navController, productViewModel = productViewModel)
                         }
                     }
                 }

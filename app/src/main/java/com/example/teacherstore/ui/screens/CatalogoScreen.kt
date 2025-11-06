@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,14 +23,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.teacherstore.model.database.DataProduct
 import com.example.teacherstore.model.product.Product
 import com.example.teacherstore.navigation.AppRoute
+import com.example.teacherstore.viewmodel.MainViewModel
+import com.example.teacherstore.viewmodel.ProductViewModel
 
 @Composable
 fun ProductItem(
     product: Product,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    productViewModel: ProductViewModel
 ) {
     Card(
         modifier = modifier
@@ -83,6 +88,14 @@ fun ProductItem(
                         fontSize = 18.sp
                     )
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = {
+                    productViewModel.insertProduct(DataProduct(productName = product.name, price = product.price, description = product.description, imageUrl = product.imageUrl))
+                }) {
+                    Text("Añadir al carrito")
+                }
+
+
             }
         }
     }
@@ -90,7 +103,7 @@ fun ProductItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(navController: NavController) {
+fun CatalogScreen(navController: NavController, mainViewModel: MainViewModel, productViewModel: ProductViewModel) {
     val productList = listOf(
         Product(1, "Lápiz Grafito", "Lápiz de madera para escribir y dibujar.", 0.50, "https://picsum.photos/id/101/200/200"),
         Product(2, "Cuaderno Universitario", "Cuaderno de 100 hojas con espiral metálico.", 2.99, "https://picsum.photos/id/122/200/200"),
@@ -119,6 +132,14 @@ fun CatalogScreen(navController: NavController) {
                             text = "Catálogo de Productos",
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {navController.navigate(AppRoute.Cart.route)}
+                        ) {
+                            Icon(imageVector =  Icons.Default.ShoppingCartCheckout,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.background)
+                        }
                     }
                 },
             )
@@ -140,7 +161,7 @@ fun CatalogScreen(navController: NavController) {
                 .background(MaterialTheme.colorScheme.background)
         ) {
             items(productList) { product ->
-                ProductItem(product = product)
+                ProductItem(product = product, productViewModel = productViewModel)
             }
         }
     }

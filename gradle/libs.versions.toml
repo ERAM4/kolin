@@ -16,6 +16,7 @@ lifecycleViemodelCompose = "<latest>"
 materialIconsExtended = "<latest>"
 navigationCompose = "<latest>"
 navigationComposeVersion = "2.9.5"
+roomKtx = "2.8.3"
 #navigationComposeJvmstubs = "2.9.5"
 
 [libraries]
@@ -41,6 +42,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 #androidx-navigation-compose-jvmstubs = { group = "androidx.navigation", name = "navigation-compose-jvmstubs", version.ref = "navigationComposeJvmstubs" }
 
 

@@ -104,6 +104,21 @@ fun RegistroScreen(
 
 
                 )
+                OutlinedTextField(
+                    value = estado.repetirContrasena,
+                    onValueChange = usuarioViewModel::onRepetirContrasenaChange,
+                    label = {Text("Repetir Contraseña")},
+                    isError = estado.errores.repetirContrasena!=null,
+                    visualTransformation = PasswordVisualTransformation(),
+                    supportingText = {
+                        estado.errores.repetirContrasena?.let{
+                            Text(it, color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+
+
+                )
 
                 OutlinedTextField(
                     value = estado.direccion,
@@ -119,6 +134,19 @@ fun RegistroScreen(
                     modifier = Modifier.fillMaxWidth()
 
 
+                )
+                OutlinedTextField(
+                    value = estado.pais,
+                    onValueChange = usuarioViewModel::onPaisChange,
+                    label = {Text("pais")},
+                    isError = estado.errores.pais!=null,
+                    singleLine = true,
+                    supportingText = {
+                        estado.errores.pais?.let{
+                            Text(it, color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
