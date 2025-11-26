@@ -105,12 +105,13 @@ fun ProductItem(
 @Composable
 fun CatalogScreen(navController: NavController, mainViewModel: MainViewModel, productViewModel: ProductViewModel) {
     val productList = listOf(
-        Product(1, "Lápiz Grafito", "Lápiz de madera para escribir y dibujar.", 0.50, "https://picsum.photos/id/101/200/200"),
-        Product(2, "Cuaderno Universitario", "Cuaderno de 100 hojas con espiral metálico.", 2.99, "https://picsum.photos/id/122/200/200"),
-        Product(3, "Goma de Borrar", "Goma de borrar suave que no daña el papel.", 0.75, "https://picsum.photos/id/40/200/200"),
-        Product(4, "Regla 30cm", "Regla de plástico transparente, ideal para geometría.", 1.20, "https://picsum.photos/id/24/200/200"),
-        Product(5, "Set de Marcadores", "Paquete con 12 marcadores de colores variados.", 5.50, "https://picsum.photos/id/175/200/200"),
-        Product(6, "Mochila Escolar", "Mochila resistente con múltiples compartimentos.", 25.00, "https://picsum.photos/id/145/200/200")
+        Product(1, "Teclado Gamer", "Optimo para juego.", 124.99, "https://cdn2.unrealengine.com/mechanical-keyboard-diagonal-4080x2295-d50ff434f19c.jpg"),
+        Product(2, "Audifonos Gamer", "Esenciales para gaming .", 99.99, "https://media.spdigital.cl/thumbnails/products/53_teu5s_b63b51ea_thumbnail_512.png"),
+        Product(3, "Silla Gamer", "Con respaldo para pasar horas en pantalla.", 150.00, "https://ulrikgaming.cl/wp-content/uploads/2021/06/60709d0491072d0dcd3fbed8.jpg"),
+        Product(4, "Polera Faker", "OMG la polera de el jugador profesional de lol.", 500.00, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU6z0c2VuKWtZVUvBziuOqebAVjzshuczLOg&s"),
+        Product(5, "Catan", "Juego de mesa para jugar en familia.", 39.99, "https://devirinvestments.s3.eu-west-1.amazonaws.com/img/catalog/product/8436017220100-1200-face3d.jpg"),
+        Product(6, "Mouse Gamer", "Mouse gamer con luces para mas FPS.", 49.99, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0PXR5i2iWEowmbeQ1LeNadu1TH7MPGoVDeg&s"),
+        Product(7, "Monopoly", "Conocido Juego de mesa para jugar con amigos.", 35.00, "https://m.media-amazon.com/images/I/71Tks9Tf7aL._AC_SL1000_.jpg")
     )
 
     Scaffold(
