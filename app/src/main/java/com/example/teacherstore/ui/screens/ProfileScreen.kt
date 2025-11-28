@@ -13,21 +13,26 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +52,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.teacherstore.navigation.AppRoute
 import com.example.teacherstore.viewmodel.MainViewModel
+import com.example.teacherstore.viewmodel.UsuarioViewModel
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -57,16 +63,22 @@ import java.util.Locale
 @Composable
 fun ProfileScreen(
     viewModel: MainViewModel= viewModel(),
-    navController: NavController
+    navController: NavController,
+    usuarioViewModel: UsuarioViewModel = viewModel()
 ){
     val items= listOf(AppRoute.Home, AppRoute.Profile)
     var selectedItem by remember { mutableIntStateOf(1) }
 
+    val estado by usuarioViewModel.estado.collectAsState()
+
+    // Local state for editing mode
+    var isEditing by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
-    
+
     // Store both URI and File Path
     var currentPhotoUri by remember { mutableStateOf<Uri?>(null) }
-    
+
     // Function to create the image file
     fun createImageFile(): File? {
         return try {
@@ -91,7 +103,6 @@ fun ProfileScreen(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
-                // Upon success, update the state variable that Coil observes
                 currentPhotoUri = tempImageUri
                 Toast.makeText(context, "Photo saved!", Toast.LENGTH_SHORT).show()
             } else {
@@ -166,7 +177,8 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         )
@@ -174,22 +186,77 @@ fun ProfileScreen(
             // Display Image
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = currentPhotoUri // Use the URI directly
+                    model = currentPhotoUri
                 ),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
                     .size(200.dp)
                     .clip(CircleShape)
-                    .background(Color.Gray), // Default background if no image
+                    .background(Color.Gray),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
                 checkAndRequestPermissions()
             }) {
-                Text(text = "Tomar Foto")
+                Text(text = "Cambiar Foto")
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // User Info Section
+            if (isEditing) {
+                OutlinedTextField(
+                    // CORREGIDO: estado.username en lugar de estado.nombre
+                    value = estado.username,
+                    onValueChange = { usuarioViewModel.onNombreChange(it) },
+                    label = { Text("Nombre de Usuario") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = estado.correo,
+                    onValueChange = { usuarioViewModel.onCorreoChange(it) },
+                    label = { Text("Correo") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = {
+                    isEditing = false
+                    // Aquí llamarías a update user...
+                }) {
+                    Icon(Icons.Default.Save, contentDescription = null)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text("Guardar")
+                }
+            } else {
+                // Display Mode
+                Text(
+                    // CORREGIDO: estado.username
+                    text = "Usuario: ${estado.username.ifBlank { "Sin nombre" }}",
+                    style = androidx.compose.material3.MaterialTheme.typography.titleLarge
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Correo: ${estado.correo.ifBlank { "correo@ejemplo.com" }}",
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyLarge
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = { isEditing = true }) {
+                    Icon(Icons.Default.Edit, contentDescription = null)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text("Editar Perfil")
+                }
             }
         }
     }

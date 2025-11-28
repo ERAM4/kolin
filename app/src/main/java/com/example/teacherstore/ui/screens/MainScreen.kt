@@ -63,7 +63,7 @@ fun MainScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = {
-                viewModel.navigateTo(AppRoute.Register)
+                viewModel.navigateTo(AppRoute.Registro)
             }) {
                 Text("Registrarse")
             }

@@ -41,6 +41,13 @@ android {
 }
 
 dependencies {
+
+    // Para conectar con Internet (Equivalente a Axios)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+// Para la interfaz moderna (Jetpack Compose - ya suele venir en proyectos nuevos)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     // build.gradle.kts (Module :app)
     implementation("io.coil-kt:coil-compose:2.5.0")
     val room_version = "2.8.3"

@@ -20,36 +20,31 @@ import com.example.teacherstore.model.database.repository.UserRepository
 import com.example.teacherstore.navigation.AppRoute
 import com.example.teacherstore.navigation.NavigationEvent
 import com.example.teacherstore.ui.screens.CartScreen
-
+import com.example.teacherstore.ui.screens.CatalogScreen
+import com.example.teacherstore.ui.screens.HelpScreen
 import com.example.teacherstore.ui.screens.HomeScreen
 import com.example.teacherstore.ui.screens.LoginScreen
-import com.example.teacherstore.ui.screens.CatalogScreen
 import com.example.teacherstore.ui.screens.MainScreen
 import com.example.teacherstore.ui.screens.ProfileScreen
 import com.example.teacherstore.ui.screens.RegistroScreen
-import com.example.teacherstore.ui.screens.HelpScreen
 import com.example.teacherstore.ui.theme.TeacherStoreTheme
 import com.example.teacherstore.viewmodel.MainViewModel
 import com.example.teacherstore.viewmodel.ProductViewModel
 import com.example.teacherstore.viewmodel.UsuarioViewModel
 import kotlinx.coroutines.flow.collectLatest
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*
-         * prueba 1
-         * funciones de git ya implementadas
-         */
 
         setContent {
-            TeacherStoreTheme{
-                val mainViewModel: MainViewModel= viewModel()
+            TeacherStoreTheme {
+                val mainViewModel: MainViewModel = viewModel()
                 val navController = rememberNavController()
 
-                val  userDataBase = UserDataBase.getDataBase(this)
+                // Configuración de Room (Base de datos local)
+                val userDataBase = UserDataBase.getDataBase(this)
                 val userRepository = UserRepository(userDataBase.userDao())
                 val userFactory = UsuarioViewModel.UsuarioViewModelFactory(userRepository)
                 val usuarioViewModel: UsuarioViewModel = viewModel(factory = userFactory)
@@ -59,99 +54,82 @@ class MainActivity : ComponentActivity() {
                 val productFactory = ProductViewModel.DataProductViewModelFactory(productRepository)
                 val productViewModel: ProductViewModel = viewModel(factory = productFactory)
 
-
-                //val usuarioViewModel: UsuarioViewModel=viewModel()
-
-                /**La función LaunchedEffect en Jetpack Compose se usa para ejecutar
-                 * efectos secundarios (side effects) en un entorno seguro y
-                 * gestionado por el ciclo de vida.
-                 * Esencialmente, te permite ejecutar código que debe ocurrir en
-                 * un momento específico, pero que no es parte directa de la composición de la
-                 * interfaz de usuario (UI), como iniciar una corrutina (coroutine).
-                 *
-                 * Manejo de Navegación: Ejecutar un código de navegación (como ir a otra pantalla)
-                 *  que se dispara por un evento de ViewModel.
-                 * */
+                // Efecto para manejar eventos de navegación globales
                 LaunchedEffect(Unit) {
-
-                    mainViewModel.navEvents.collectLatest {
-                        event ->
-                        when(event){
-                            is NavigationEvent.NavigateTo ->{
-                                navController.navigate(event.appRoute.route){
-                                    /**.let { ... }: Esta es una función de alcance de Kotlin que se usa para ejecutar un
-                                     * bloque de código solo si el objeto no es null.
-                                     * Su propósito es ejecutar un código usando el objeto que ya existe (en este caso, el valor de event.popUpRoute).*/
+                    mainViewModel.navEvents.collectLatest { event ->
+                        when (event) {
+                            is NavigationEvent.NavigateTo -> {
+                                navController.navigate(event.appRoute.route) {
                                     event.popUpRoute?.let {
-                                        /*Pop: Quitar el elemento de más arriba (lo que hace el botón "Atrás").
-                                          popUpTo: Quitar múltiples elementos hasta un destino específico en la pila, dándote control total sobre qué destinos se mantienen.*/
-
-                                        //popUpTo Se utiliza con la ruta de la pantalla a la que quieres volver o eliminar hasta ese punto
-                                        popUpTo(it.route){
-                                            //si la opcion inclusive es true, despues de navegar a la ruta con popUpTo, elimina del registro de rutas la pantalla anterior. De esta forma solo existira en la pila la ruta actual.
-                                            //por ejemoplo si despues de crear la cuenta hacemos login, podemos usar inclusive= true para eliminar de la pila todas las rutas que se usaron para crear la cuenta y hacer login.
-                                            inclusive=event.inclusive
-
+                                        popUpTo(it.route) {
+                                            inclusive = event.inclusive
                                         }
-                                        /*Si la pantalla de destino ya está en la parte superior de la pila,
-                                          el sistema no crea una nueva instancia. En su lugar, simplemente la reutiliza.
-                                          Usado habitualmente en barras de navegación inferiores (Bottom Navigation) para no apilar la misma pantalla una y otra vez.
-                                          */
-                                        launchSingleTop=event.singleTop
-                                        /*Si la ruta de destino tiene un estado guardado (porque se navegó lejos de ella), esta opción lo restaura.
-                                        Se usa junto con saveState*/
-                                        restoreState=true
+                                        launchSingleTop = event.singleTop
+                                        restoreState = true
                                     }
-
                                 }
-
-
-
                             }
                             is NavigationEvent.NavigateUp -> navController.navigateUp()
                             is NavigationEvent.PopBackStack -> navController.popBackStack()
-
                         }
                     }
-                }    //finaliza el bloque LaunchedEffect, encargado de realizar la coroutina para manejar la navegación.
+                }
 
-                Scaffold(modifier = Modifier.fillMaxSize())
-                {
-                    innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
-                        navController=navController,
+                        navController = navController,
                         startDestination = AppRoute.Main.route,
                         modifier = Modifier.padding(innerPadding)
+                    ) {
 
-                    ){
+                        // --- PANTALLAS ---
+
                         composable(AppRoute.Home.route) {
-                            HomeScreen(mainViewModel,navController)
+                            HomeScreen(mainViewModel, navController)
                         }
 
-                        composable(AppRoute.Register.route) {
-                            RegistroScreen(mainViewModel,usuarioViewModel,navController)
+                        composable(AppRoute.Registro.route) {
+                            RegistroScreen(navController = navController)
                         }
+
                         composable(AppRoute.Profile.route) {
-                            ProfileScreen(mainViewModel,navController)
+                            ProfileScreen(mainViewModel, navController, usuarioViewModel)
                         }
+
                         composable(AppRoute.Settings.route) {
-                            //SettingScreen(navController,viewModel)
+                            // SettingScreen(navController, viewModel)
                         }
+
                         composable(AppRoute.Help.route) {
                             HelpScreen(navController)
                         }
-                        composable(AppRoute.Main.route){
+
+                        composable(AppRoute.Main.route) {
                             MainScreen(mainViewModel, navController)
                         }
-                        composable(AppRoute.Login.route){
-                            LoginScreen(mainViewModel,usuarioViewModel,navController)
 
+                        // --- AQUÍ ESTABA EL ERROR: FALTABAN ESTAS PANTALLAS ---
+
+                        // 1. LOGIN (Necesario para que no crashee tras registrarse)
+                        composable(AppRoute.Login.route) {
+                            LoginScreen(navController = navController)
                         }
+
+                        // 2. CATÁLOGO
                         composable(AppRoute.Catalog.route) {
-                            CatalogScreen(navController = navController, mainViewModel = mainViewModel, productViewModel = productViewModel)
+                            CatalogScreen(
+                                navController = navController,
+                                mainViewModel = mainViewModel,
+                                productViewModel = productViewModel
+                            )
                         }
+
+                        // 3. CARRITO
                         composable(AppRoute.Cart.route) {
-                            CartScreen(navController = navController, productViewModel = productViewModel)
+                            CartScreen(
+                                navController = navController,
+                                productViewModel = productViewModel
+                            )
                         }
                     }
                 }

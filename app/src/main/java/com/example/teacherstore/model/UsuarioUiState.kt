@@ -1,31 +1,32 @@
 package com.example.teacherstore.model
 
-//Este modelo de datos será actualizado por el viewmodel
-
+// MODELO DE ESTADO PARA EL LOGIN
 data class LoginUIState(
-    val name: String="",
-    val password: String=""
+    val correo: String = "",   // CAMBIO: Antes era name, ahora es correo
+    val password: String = ""
 )
+
+// MODELO DE ESTADO PARA EL REGISTRO (Usuario)
 data class UsuarioUiState(
-    val nombre: String="",
-    val correo: String="",
-    val contrasena: String="",
-    val repetirContrasena: String="",
-    val direccion: String="",
-    val pais: String="",
-    val aceptaTerminos: Boolean=false,
-    val errores: UsuarioErrores= UsuarioErrores()
+    // Coincide con 'username' del backend
+    val username: String = "",
 
+    val correo: String = "",
+    val contrasena: String = "",
+    val repetirContrasena: String = "",
+
+    // Eliminados: direccion y pais (Tu backend no los tiene)
+
+    val aceptaTerminos: Boolean = false,
+    val errores: UsuarioErrores = UsuarioErrores()
 )
 
+// MODELO DE ERRORES DE VALIDACIÓN
 data class UsuarioErrores(
-    val nombre: String?=null,
-    val correo: String?=null,
-    val contrasena: String?=null,
-    val repetirContrasena: String?=null,
-    val direccion: String? =null,
-    val pais: String?=null
+    val username: String? = null,
+    val correo: String? = null,
+    val contrasena: String? = null,
+    val repetirContrasena: String? = null
 
+    // Eliminados: direccion y pais
 )
-
-
