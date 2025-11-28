@@ -24,6 +24,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import com.example.teacherstore.viewmodel.MainViewModel
@@ -53,7 +54,7 @@ fun HomeScreen(
                         scope.launch { drawerState.close() }
                         viewModel.navigateTo(AppRoute.Profile)
                     }
-                )// Pega este bloque de código aquí
+                )
                 NavigationDrawerItem(
                     label = { Text("Ver Catálogo") },
                     selected = false,
@@ -62,12 +63,21 @@ fun HomeScreen(
                         viewModel.navigateTo(AppRoute.Catalog)
                     }
                 )
+                NavigationDrawerItem(
+                    label = { Text("Ayuda y Soporte") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        viewModel.navigateTo(AppRoute.Help)
+                    }
+                )
 
             }
         }
     )
     {
         Scaffold (
+            containerColor = Color(0xFF001F1F), // Solid Dark Cyan background
             topBar = {
                 TopAppBar(
                     title = {Text("Pantalla Home")},
@@ -92,8 +102,8 @@ fun HomeScreen(
 
 
             ){
-                Text("Bienvenido a la página  de Inicio")
-                Text("A la izquierda estan las opciones disponibles")
+                Text("Bienvenido a la página  de Inicio", color = Color.White)
+                Text("A la izquierda estan las opciones disponibles", color = Color.White)
                 Spacer(modifier=Modifier.height(16.dp))
                 Button(onClick = {viewModel.navigateTo(AppRoute.Profile)}) {
                     Text("Perfil")
@@ -103,7 +113,11 @@ fun HomeScreen(
                 }) {
                     Text("Catalogo")
                 }
-
+                Button(onClick = {
+                    viewModel.navigateTo(AppRoute.Help)
+                }) {
+                    Text("Ayuda")
+                }
 
 
             }

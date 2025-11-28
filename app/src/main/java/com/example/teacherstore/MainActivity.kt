@@ -27,6 +27,7 @@ import com.example.teacherstore.ui.screens.CatalogScreen
 import com.example.teacherstore.ui.screens.MainScreen
 import com.example.teacherstore.ui.screens.ProfileScreen
 import com.example.teacherstore.ui.screens.RegistroScreen
+import com.example.teacherstore.ui.screens.HelpScreen
 import com.example.teacherstore.ui.theme.TeacherStoreTheme
 import com.example.teacherstore.viewmodel.MainViewModel
 import com.example.teacherstore.viewmodel.ProductViewModel
@@ -135,6 +136,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(AppRoute.Settings.route) {
                             //SettingScreen(navController,viewModel)
+                        }
+                        composable(AppRoute.Help.route) {
+                            HelpScreen(navController)
                         }
                         composable(AppRoute.Main.route){
                             MainScreen(mainViewModel, navController)

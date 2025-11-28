@@ -5,6 +5,7 @@ sealed class AppRoute(val route:String) {
     data object Register: AppRoute("register")
     data object Profile: AppRoute("profile")
     data object Settings: AppRoute("settings")
+    data object Help: AppRoute("help") // Nueva ruta para Ayuda
 
     data object Main: AppRoute("main")
     data object Login: AppRoute("login")
