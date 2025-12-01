@@ -2,25 +2,21 @@ package com.example.teacherstore.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// --- PALETA LEVEL UP GAMER ---
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// 1. Fondos
+val GamerBackground = Color(0xFF0B0E14) // Azul casi negro (profundo)
+val GamerSurface = Color(0xFF1B1F27)    // Gris azulado (para Tarjetas/Cards)
 
-// Warm Colors (kept for reference if needed, but user wants Cyan/Black now)
-val Orange80 = Color(0xFFFFB59C)
-val OrangeGrey80 = Color(0xFFE7BDB2)
-val Yellow80 = Color(0xFFD6C68E)
+// 2. Acentos (Neón)
+val NeonCyan = Color(0xFF00F0FF)        // Color principal (Botones, Iconos activos)
+val NeonPurple = Color(0xFF9D00FF)      // Color secundario (Detalles, Degradados)
+val NeonGreen = Color(0xFF00FF94)       // Para precios o éxito
 
-val Orange40 = Color(0xFF9A4522)
-val OrangeGrey40 = Color(0xFF77574E)
-val Yellow40 = Color(0xFF6C5D2F)
+// 3. Textos
+val TextWhite = Color(0xFFEEEEEE)       // Blanco casi puro (Títulos)
+val TextGray = Color(0xFFB0B3B8)        // Gris claro (Subtítulos, descripciones)
 
-// Cyan and Black Scheme
-val Cyan80 = Color(0xFF00FFFF) // Cyan electrico
-val Cyan40 = Color(0xFF008B8B) // Cyan oscuro
-val Black = Color(0xFF000000)
-val White = Color(0xFFFFFFFF)
+// 4. Errores
+val ErrorRed = Color(0xFFFF4444)
+

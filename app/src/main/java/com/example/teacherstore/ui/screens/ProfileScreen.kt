@@ -7,43 +7,30 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -51,8 +38,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.teacherstore.navigation.AppRoute
+import com.example.teacherstore.utils.SessionManager// Asegúrate de importar tu SessionManager
 import com.example.teacherstore.viewmodel.MainViewModel
 import com.example.teacherstore.viewmodel.UsuarioViewModel
+
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -62,52 +51,38 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: MainViewModel= viewModel(),
+    viewModel: MainViewModel = viewModel(),
     navController: NavController,
     usuarioViewModel: UsuarioViewModel = viewModel()
-){
-    val items= listOf(AppRoute.Home, AppRoute.Profile)
-    var selectedItem by remember { mutableIntStateOf(1) }
+) {
+    val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
 
+    // Obtenemos los datos del ViewModel
     val estado by usuarioViewModel.estado.collectAsState()
 
-    // Local state for editing mode
+    // Estado local para edición
     var isEditing by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-
-    // Store both URI and File Path
+    // --- LÓGICA DE LA CÁMARA (Sin cambios, solo funciona) ---
     var currentPhotoUri by remember { mutableStateOf<Uri?>(null) }
+    var tempImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Function to create the image file
     fun createImageFile(): File? {
         return try {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val imageFileName = "JPEG_${timeStamp}_"
             val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-            )
+            File.createTempFile(imageFileName, ".jpg", storageDir)
         } catch (ex: IOException) {
-            Toast.makeText(context, "Error creating file: ${ex.message}", Toast.LENGTH_SHORT).show()
             null
         }
     }
 
-    // Temporary URI holder for the camera intent
-    var tempImageUri by remember { mutableStateOf<Uri?>(null) }
-
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
-            if (success) {
-                currentPhotoUri = tempImageUri
-                Toast.makeText(context, "Photo saved!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "No photo taken.", Toast.LENGTH_SHORT).show()
-            }
+            if (success) currentPhotoUri = tempImageUri
         }
     )
 
@@ -126,17 +101,13 @@ fun ProfileScreen(
                     takePictureLauncher.launch(photoURI)
                 }
             } else {
-                Toast.makeText(context, "Camera permissions needed.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Se necesitan permisos de cámara", Toast.LENGTH_SHORT).show()
             }
         }
     )
 
     fun checkAndRequestPermissions() {
-        val permissionsToRequest = arrayOf(Manifest.permission.CAMERA)
-
-        if (permissionsToRequest.all {
-                ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-            }) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             val photoFile: File? = createImageFile()
             photoFile?.let {
                 val photoURI: Uri = FileProvider.getUriForFile(
@@ -148,116 +119,189 @@ fun ProfileScreen(
                 takePictureLauncher.launch(photoURI)
             }
         } else {
-            requestPermissionLauncher.launch(permissionsToRequest)
+            requestPermissionLauncher.launch(arrayOf(Manifest.permission.CAMERA))
         }
     }
 
     Scaffold(
-        bottomBar ={
-            NavigationBar {
-                items.forEachIndexed { index,approute ->
-                    NavigationBarItem(
-                        selected= selectedItem==index,
-                        onClick = {
-                            selectedItem=index
-                            viewModel.navigateTo(approute)
-                        },
-                        label = {Text(approute.route)},
-                        icon = {
-                            Icon(imageVector = if(approute== AppRoute.Home) Icons.Default.Home else Icons.Default.Person,
-                                contentDescription = approute.route
-                            )
-                        }
+        containerColor = MaterialTheme.colorScheme.background, // Fondo Oscuro
+
+        // BARRA INFERIOR (Bottom Bar) estilizada
+        bottomBar = {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface, // Gris oscuro
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                // HOME
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { viewModel.navigateTo(AppRoute.Home) },
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Lobby") },
+                    colors = NavigationBarItemDefaults.colors(
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                }
+                )
+                // PERFIL (Seleccionado)
+                NavigationBarItem(
+                    selected = true,
+                    onClick = { /* Ya estamos aquí */ },
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
+                    label = { Text("Perfil") },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.primary, // Cyan
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        indicatorColor = MaterialTheme.colorScheme.surface // Quita el óvalo de fondo
+                    )
+                )
             }
         }
-    )
-    { innerPadding->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        )
-        {
-            // Display Image
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = currentPhotoUri
-                ),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(200.dp)
-                    .clip(CircleShape)
-                    .background(Color.Gray),
-                contentScale = ContentScale.Crop
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            // TÍTULO
+            Text(
+                text = "PERFIL DE JUGADOR",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            Button(onClick = {
-                checkAndRequestPermissions()
-            }) {
-                Text(text = "Cambiar Foto")
+            // --- FOTO DE PERFIL ---
+            Box(contentAlignment = Alignment.BottomEnd) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = currentPhotoUri),
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(160.dp)
+                        .clip(CircleShape)
+                        .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape) // Borde Cyan
+                        .background(MaterialTheme.colorScheme.surface),
+                    contentScale = ContentScale.Crop
+                )
+
+                // Botón pequeño de cámara
+                IconButton(
+                    onClick = { checkAndRequestPermissions() },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.secondary) // Fondo Morado
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CameraAlt,
+                        contentDescription = "Cambiar foto",
+                        tint = Color.White
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // User Info Section
-            if (isEditing) {
-                OutlinedTextField(
-                    // CORREGIDO: estado.username en lugar de estado.nombre
-                    value = estado.username,
-                    onValueChange = { usuarioViewModel.onNombreChange(it) },
-                    label = { Text("Nombre de Usuario") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+            // --- TARJETA DE INFORMACIÓN ---
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(8.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    if (isEditing) {
+                        // MODO EDICIÓN
+                        OutlinedTextField(
+                            value = estado.username,
+                            onValueChange = { usuarioViewModel.onNombreChange(it) },
+                            label = { Text("Gamertag") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            leadingIcon = { Icon(Icons.Default.Person, null) }
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        OutlinedTextField(
+                            value = estado.correo,
+                            onValueChange = { usuarioViewModel.onCorreoChange(it) },
+                            label = { Text("Email") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            leadingIcon = { Icon(Icons.Default.Email, null) }
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Button(
+                            onClick = { isEditing = false },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        ) {
+                            Icon(Icons.Default.Save, null, tint = Color.Black)
+                            Spacer(Modifier.width(8.dp))
+                            Text("GUARDAR CAMBIOS", color = Color.Black, fontWeight = FontWeight.Bold)
+                        }
 
-                OutlinedTextField(
-                    value = estado.correo,
-                    onValueChange = { usuarioViewModel.onCorreoChange(it) },
-                    label = { Text("Correo") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    } else {
+                        // MODO LECTURA (Stats)
+                        ProfileStatItem(label = "GAMERTAG", value = estado.username.ifBlank { "Player 1" }, icon = Icons.Default.Person)
+                        Divider(color = MaterialTheme.colorScheme.background, thickness = 1.dp, modifier = Modifier.padding(vertical = 12.dp))
+                        ProfileStatItem(label = "CORREO", value = estado.correo.ifBlank { "test@gamer.com" }, icon = Icons.Default.Email)
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                Button(onClick = {
-                    isEditing = false
-                    // Aquí llamarías a update user...
-                }) {
-                    Icon(Icons.Default.Save, contentDescription = null)
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Text("Guardar")
-                }
-            } else {
-                // Display Mode
-                Text(
-                    // CORREGIDO: estado.username
-                    text = "Usuario: ${estado.username.ifBlank { "Sin nombre" }}",
-                    style = androidx.compose.material3.MaterialTheme.typography.titleLarge
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Correo: ${estado.correo.ifBlank { "correo@ejemplo.com" }}",
-                    style = androidx.compose.material3.MaterialTheme.typography.bodyLarge
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(onClick = { isEditing = true }) {
-                    Icon(Icons.Default.Edit, contentDescription = null)
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Text("Editar Perfil")
+                        OutlinedButton(
+                            onClick = { isEditing = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Icon(Icons.Default.Edit, null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("EDITAR PERFIL")
+                        }
+                    }
                 }
             }
+
+            Spacer(modifier = Modifier.weight(1f)) // Empuja lo siguiente al fondo
+
+            // --- BOTÓN CERRAR SESIÓN ---
+            Button(
+                onClick = {
+                    // 1. Borrar sesión
+                    sessionManager.clearData()
+                    // 2. Ir al Login y borrar historial
+                    navController.navigate(AppRoute.Login.route) {
+                        popUpTo(0) { inclusive = true } // Borra toda la pila de navegación
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Logout, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("CERRAR SESIÓN")
+            }
+        }
+    }
+}
+
+// Componente auxiliar para mostrar datos bonitos
+@Composable
+fun ProfileStatItem(label: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = value, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
         }
     }
 }

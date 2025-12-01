@@ -50,6 +50,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     // build.gradle.kts (Module :app)
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.play.services.cast.framework)
     val room_version = "2.8.3"
 
     implementation("androidx.room:room-runtime:$room_version")

@@ -5,65 +5,67 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Cyan80,
-    onPrimary = Black,
-    secondary = Cyan40,
-    tertiary = Cyan80,
-    background = Black,
-    surface = Black,
-    onBackground = Cyan80,
-    onSurface = Cyan80
-)
+// Definimos el esquema de colores GAMER
+// Usamos las variables que definimos en Color.kt (Asegúrate de tenerlas allá)
+private val GamerColorScheme = darkColorScheme(
 
-private val LightColorScheme = lightColorScheme(
-    primary = Cyan40,
-    onPrimary = White,
-    secondary = Cyan80,
-    tertiary = Cyan40,
-    background = White,
-    surface = White,
-    onBackground = Black,
-    onSurface = Black
+    // El color principal (Botones, Checkboxes activos, etc.)
+    primary = NeonCyan,
+    onPrimary = Color.Black, // Texto negro sobre botón Cyan para contraste
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
+    // El color secundario (Botones flotantes, detalles)
+    secondary = NeonPurple,
     onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+
+    // Fondos
+    background = GamerBackground, // El azul oscuro profundo
+    onBackground = TextWhite,     // Texto blanco sobre el fondo
+
+    // Superficies (Tarjetas, BottomSheet, Menús)
+    surface = GamerSurface,       // El gris azulado
+    onSurface = TextWhite,
+
+    // Errores
+    error = ErrorRed,
+    onError = Color.White
 )
 
 @Composable
 fun TeacherStoreTheme(
+    // Ignoramos el ajuste del sistema, siempre queremos oscuro
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    // Desactivamos el color dinámico para mantener nuestra identidad visual
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    // Aquí forzamos a que SIEMPRE use nuestro esquema Gamer
+    val colorScheme = GamerColorScheme
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    // Configuración para pintar la barra de estado (donde va la hora)
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+
+            // Pinta la barra del color del fondo para que se vea "infinita"
+            window.statusBarColor = GamerBackground.toArgb()
+
+            // Le dice al sistema: "El fondo es oscuro, pon los iconos (hora/batería) en blanco"
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+        }
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = Typography, // Asegúrate de que Typography esté definido en Typography.kt
         content = content
     )
 }

@@ -1,151 +1,201 @@
 package com.example.teacherstore.ui.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.teacherstore.model.database.AuthViewModel // Tu ViewModel nuevo
+
+
+import com.example.teacherstore.model.database.AuthViewModel
 import com.example.teacherstore.navigation.AppRoute
 
 @Composable
 fun RegistroScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = viewModel() // Usamos el AuthViewModel conectado a Retrofit
+    authViewModel: AuthViewModel = viewModel()
 ) {
-    // ESTADOS DEL FORMULARIO (Solo lo que pide el Backend)
-    var nombreUsuario by remember { mutableStateOf("") } // Se enviará como 'username'
-    var correo by remember { mutableStateOf("") }       // Se enviará como 'correo'
-    var password by remember { mutableStateOf("") }     // Se enviará como 'password'
-    var repetirPassword by remember { mutableStateOf("") } // Solo validación visual
-
+    // ESTADOS DEL FORMULARIO
+    var nombreUsuario by remember { mutableStateOf("") }
+    var correo by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var repetirPassword by remember { mutableStateOf("") }
     var aceptaTerminos by remember { mutableStateOf(false) }
 
-    // ESTADOS QUE VIENEN DEL VIEWMODEL (RESPUESTA DEL SERVIDOR)
+    // ESTADOS DEL VIEWMODEL
     val isLoading by authViewModel.isLoading.collectAsState()
     val mensajeError by authViewModel.mensajeError.collectAsState()
-
     val context = LocalContext.current
 
-    // EFECTO: Si el registro es exitoso, volvemos al Login
+    // EFECTO: Si el registro es exitoso
     LaunchedEffect(mensajeError) {
         if (mensajeError?.contains("exitoso", ignoreCase = true) == true) {
-            Toast.makeText(context, "Cuenta creada con éxito", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Cuenta creada con éxito. ¡A jugar!", Toast.LENGTH_SHORT).show()
             navController.navigate(AppRoute.Login.route)
         }
     }
 
     Scaffold(
-        containerColor = Color.White,
-        content = { paddingValues ->
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+
+            Text(
+                text = "CREAR CUENTA",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Mensaje de error
+            if (mensajeError != null && !mensajeError!!.contains("exitoso", ignoreCase = true)) {
+                Text(
+                    text = mensajeError!!,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            // 1. USERNAME
+            OutlinedTextField(
+                value = nombreUsuario,
+                onValueChange = { nombreUsuario = it },
+                label = { Text("Gamertag (Usuario)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 2. CORREO
+            OutlinedTextField(
+                value = correo,
+                onValueChange = { correo = it },
+                label = { Text("Email") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 3. PASSWORD
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 4. REPETIR PASSWORD
+            OutlinedTextField(
+                value = repetirPassword,
+                onValueChange = { repetirPassword = it },
+                label = { Text("Confirmar Contraseña") },
+                visualTransformation = PasswordVisualTransformation(),
+                isError = (repetirPassword.isNotEmpty() && password != repetirPassword),
+                supportingText = {
+                    if (repetirPassword.isNotEmpty() && password != repetirPassword) {
+                        Text("Las contraseñas no coinciden")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // CHECKBOX
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-
-                Text(text = "Crear Cuenta", style = MaterialTheme.typography.headlineMedium)
-
-                // Mensaje de error del servidor (ej: "Error 500" o "Usuario ya existe")
-                if (mensajeError != null && !mensajeError!!.contains("exitoso", ignoreCase = true)) {
-                    Text(text = mensajeError!!, color = MaterialTheme.colorScheme.error)
-                }
-
-                // 1. INPUT USERNAME (Coincide con User.java: private String username)
-                OutlinedTextField(
-                    value = nombreUsuario,
-                    onValueChange = { nombreUsuario = it },
-                    label = { Text("Nombre de Usuario") }, // Antes "Nombre"
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                Checkbox(
+                    checked = aceptaTerminos,
+                    onCheckedChange = { aceptaTerminos = it },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
-
-                // 2. INPUT CORREO (Coincide con User.java: private String correo)
-                OutlinedTextField(
-                    value = correo,
-                    onValueChange = { correo = it },
-                    label = { Text("Email") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "Acepto los términos y condiciones",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium
                 )
+            }
 
-                // 3. INPUT PASSWORD (Coincide con User.java: private String password)
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Contraseña") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
-                )
+            Spacer(modifier = Modifier.height(24.dp))
 
-                // 4. INPUT REPETIR PASSWORD (Solo validación visual en Android)
-                OutlinedTextField(
-                    value = repetirPassword,
-                    onValueChange = { repetirPassword = it },
-                    label = { Text("Repetir Contraseña") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    isError = (repetirPassword.isNotEmpty() && password != repetirPassword),
-                    supportingText = {
-                        if (repetirPassword.isNotEmpty() && password != repetirPassword) {
-                            Text("Las contraseñas no coinciden")
+            // BOTÓN REGISTRO
+            if (isLoading) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            } else {
+                Button(
+                    onClick = {
+                        if (nombreUsuario.isBlank() || correo.isBlank() || password.isBlank()) {
+                            Toast.makeText(context, "Faltan datos", Toast.LENGTH_SHORT).show()
+                        } else if (password != repetirPassword) {
+                            Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                        } else if (!aceptaTerminos) {
+                            Toast.makeText(context, "Debes aceptar los términos", Toast.LENGTH_SHORT).show()
+                        } else {
+                            authViewModel.registrar(nombreUsuario, correo, password)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                // --- ¡IMPORTANTE! ---
-                // Se eliminaron "Dirección" y "País" porque tu modelo User.java NO los tiene.
-                // --------------------
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = aceptaTerminos,
-                        onCheckedChange = { aceptaTerminos = it }
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Acepto los términos y condiciones")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // BOTÓN DE REGISTRO
-                if (isLoading) {
-                    CircularProgressIndicator()
-                } else {
-                    Button(
-                        onClick = {
-                            // Validaciones simples antes de molestar al servidor
-                            if (nombreUsuario.isBlank() || correo.isBlank() || password.isBlank()) {
-                                Toast.makeText(context, "Faltan datos", Toast.LENGTH_SHORT).show()
-                            } else if (password != repetirPassword) {
-                                Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
-                            } else if (!aceptaTerminos) {
-                                Toast.makeText(context, "Acepta los términos", Toast.LENGTH_SHORT).show()
-                            } else {
-                                // LLAMADA FINAL: Enviamos solo lo que User.java espera
-                                authViewModel.registrar(nombreUsuario, correo, password)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(text = "Registrarse")
-                    }
-                }
-
-                TextButton(onClick = { navController.navigate(AppRoute.Login.route) }) {
-                    Text(text = "¿Ya tienes cuenta? Iniciar sesión")
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("REGISTRARSE", fontWeight = FontWeight.Bold)
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // LINK AL LOGIN
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "¿Ya tienes cuenta? ",
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Inicia sesión",
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        navController.navigate(AppRoute.Login.route)
+                    }
+                )
+            }
         }
-    )
+    }
 }
