@@ -22,7 +22,7 @@ class SessionManager(context: Context) {
         return prefs.getString(USER_TOKEN, null)
     }
 
-    // Cerrar Sesión (Borrar todo)
+    // Cerrar Sesión
     fun clearData() {
         val editor = prefs.edit()
         editor.clear()
