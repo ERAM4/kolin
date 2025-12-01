@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
 
-                        // --- PANTALLASs ---
+                        // --- PANTALLASSS ---
 
                         composable(AppRoute.Home.route) {
                             HomeScreen(mainViewModel, navController)
