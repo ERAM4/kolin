@@ -7,50 +7,51 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel // Importante para inyectar el ViewModel
 import androidx.navigation.NavController
-import com.example.teacherstore.model.database.AuthViewModel // Tu nuevo ViewModel
+import com.example.teacherstore.model.database.AuthViewModel
 import com.example.teacherstore.navigation.AppRoute
 
 @Composable
 fun LoginScreen(
-    navController: NavController, // <--- Este va primero para que coincida con MainActivity
-    authViewModel: AuthViewModel = viewModel() // <--- Usamos el AuthViewModel conectado a Spring Boot
+    navController: NavController,
+    authViewModel: AuthViewModel = viewModel() // Esto crea la instancia del ViewModel automáticamente
 ) {
-    // ESTADOS LOCALES (Inputs del formulario)
+    // ESTADOS LOCALES (Lo que el usuario escribe)
     var correo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // ESTADOS QUE VIENEN DEL SERVIDOR
+    // ESTADOS DEL SERVIDOR (Observamos al ViewModel)
     val isLoading by authViewModel.isLoading.collectAsState()
     val mensajeError by authViewModel.mensajeError.collectAsState()
     val token by authViewModel.loginExitoso.collectAsState()
 
     val context = LocalContext.current
 
-    // --- 1. SI EL LOGIN ES EXITOSO (Llega el Token) ---
+    // 1. REACCIÓN AL ÉXITO (Navegar al Home)
     LaunchedEffect(token) {
         if (token != null) {
             Toast.makeText(context, "¡Bienvenido!", Toast.LENGTH_SHORT).show()
-            // Navegamos al Home
+            // Log de prueba para que veas el token en consola
+            println("TOKEN RECIBIDO: $token")
+
             navController.navigate(AppRoute.Home.route) {
-                // Esto evita que al dar "Atrás" vuelvas al login
                 popUpTo(AppRoute.Login.route) { inclusive = true }
             }
         }
     }
 
-    // --- 2. SI HAY ERROR (Ej: contraseña mal) ---
+    // 2. REACCIÓN AL ERROR (Mostrar Toast)
     LaunchedEffect(mensajeError) {
         if (mensajeError != null) {
-            Toast.makeText(context, mensajeError, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, mensajeError, Toast.LENGTH_LONG).show()
         }
     }
 
+    // --- INTERFAZ DE USUARIO (UI) ---
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -68,7 +69,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // CAMPO CORREO
             OutlinedTextField(
                 value = correo,
                 onValueChange = { correo = it },
@@ -79,7 +79,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // CAMPO CONTRASEÑA
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -91,22 +90,19 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // BOTÓN LOGIN
             if (isLoading) {
                 CircularProgressIndicator()
             } else {
                 Button(
                     onClick = {
-                        // AQUÍ LLAMAMOS A SPRING BOOT
+                        // AQUÍ SE DISPARA LA CONEXIÓN
                         if (correo.isNotBlank() && password.isNotBlank()) {
                             authViewModel.login(correo, password)
                         } else {
                             Toast.makeText(context, "Por favor llena los campos", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
                 ) {
                     Text("Iniciar Sesión")
                 }
@@ -114,7 +110,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // IR A REGISTRO
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -124,7 +119,6 @@ fun LoginScreen(
                     text = "¡Crea una!",
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable {
-                        // Corregido: Antes ibas al Home, ahora vas al Registro
                         navController.navigate(AppRoute.Registro.route)
                     }
                 )

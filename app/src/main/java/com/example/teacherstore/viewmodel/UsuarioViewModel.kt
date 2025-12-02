@@ -40,7 +40,9 @@ class UsuarioViewModel(private val userRepository: UserRepository) : ViewModel()
     fun onRepetirContrasenaChange(repetir: String) {
         _estado.update { it.copy(repetirContrasena = repetir, errores = it.errores.copy(repetirContrasena = null)) }
     }
-
+    fun onCodigoChange(nuevoCodigopostal: String) {
+        _estado.update { it.copy(codigopostal = nuevoCodigopostal, errores = it.errores.copy(codigopostal = null)) }
+    }
     fun onAceptarTerminosChange(acepta: Boolean) {
         _estado.update { it.copy(aceptaTerminos = acepta) }
     }
@@ -61,10 +63,11 @@ class UsuarioViewModel(private val userRepository: UserRepository) : ViewModel()
             username = if (formularioActual.username.isBlank()) "El campo es obligatorio" else null,
             correo = if (!Patterns.EMAIL_ADDRESS.matcher(formularioActual.correo).matches()) "Correo inválido" else null,
             contrasena = if (formularioActual.contrasena.length < 4) "Mínimo 4 caracteres" else null,
-            repetirContrasena = if (formularioActual.contrasena != formularioActual.repetirContrasena) "No coinciden" else null
+            repetirContrasena = if (formularioActual.contrasena != formularioActual.repetirContrasena) "No coinciden" else null,
+            codigopostal = if (formularioActual.codigopostal.isBlank()) "El campo es obligatorio" else null,
         )
 
-        val hayErrores = listOfNotNull(errores.username, errores.correo, errores.contrasena, errores.repetirContrasena).isNotEmpty()
+        val hayErrores = listOfNotNull(errores.username, errores.correo, errores.contrasena, errores.repetirContrasena,errores.codigopostal).isNotEmpty()
         _estado.update { it.copy(errores = errores) }
         return !hayErrores
     }

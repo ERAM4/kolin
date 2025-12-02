@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
-
 import com.example.teacherstore.model.database.AuthViewModel
 import com.example.teacherstore.navigation.AppRoute
 
@@ -26,24 +25,45 @@ fun RegistroScreen(
     navController: NavController,
     authViewModel: AuthViewModel = viewModel()
 ) {
-    // ESTADOS DEL FORMULARIO
+    // ESTADOS DEL FORMULARIO (Inputs)
     var nombreUsuario by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repetirPassword by remember { mutableStateOf("") }
+    var codigopostal by remember { mutableStateOf("") }
     var aceptaTerminos by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
-    // ESTADOS DEL VIEWMODEL
+    // ESTADOS DEL VIEWMODEL (Observamos la lógica de negocio)
     val isLoading by authViewModel.isLoading.collectAsState()
     val mensajeError by authViewModel.mensajeError.collectAsState()
+
+    // ¡NUEVO! Observamos la señal de éxito exacta
+    val registroExitoso by authViewModel.registroExitoso.collectAsState()
+
     val context = LocalContext.current
 
-    // EFECTO: Si el registro es exitoso
+    // --- EFECTO: Si el registro es exitoso (Booleano) ---
+    // Ya no dependemos de leer el texto del mensaje, es más seguro así.
+    LaunchedEffect(registroExitoso) {
+        if (registroExitoso) {
+            Toast.makeText(context, "Cuenta creada con éxito. Por favor inicia sesión.", Toast.LENGTH_LONG).show()
+
+            // Navegamos al Login
+            navController.navigate(AppRoute.Login.route) {
+                // Esto borra la pantalla de registro del historial para no volver atrás
+                popUpTo(AppRoute.Registro.route) { inclusive = true }
+            }
+
+            // Opcional: Limpiamos los estados por si vuelve a entrar
+            authViewModel.limpiarEstados()
+        }
+    }
+
+    // --- EFECTO: Si hay un error de conexión o validación ---
     LaunchedEffect(mensajeError) {
-        if (mensajeError?.contains("exitoso", ignoreCase = true) == true) {
-            Toast.makeText(context, "Cuenta creada con éxito. ¡A jugar!", Toast.LENGTH_SHORT).show()
-            navController.navigate(AppRoute.Login.route)
+        if (mensajeError != null) {
+            Toast.makeText(context, mensajeError, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -55,8 +75,7 @@ fun RegistroScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(24.dp)
-                    .verticalScroll(scrollState),
-
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -69,15 +88,6 @@ fun RegistroScreen(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Mensaje de error
-            if (mensajeError != null && !mensajeError!!.contains("exitoso", ignoreCase = true)) {
-                Text(
-                    text = mensajeError!!,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
 
             // 1. USERNAME
             OutlinedTextField(
@@ -124,16 +134,27 @@ fun RegistroScreen(
                 isError = (repetirPassword.isNotEmpty() && password != repetirPassword),
                 supportingText = {
                     if (repetirPassword.isNotEmpty() && password != repetirPassword) {
-                        Text("Las contraseñas no coinciden")
+                        Text("Las contraseñas no coinciden", color = MaterialTheme.colorScheme.error)
                     }
                 },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 2. CORREO
+            OutlinedTextField(
+                value = codigopostal,
+                onValueChange = { codigopostal = it },
+                label = { Text("CodigoPostal") },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // CHECKBOX
+            // CHECKBOX TÉRMINOS
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -162,14 +183,17 @@ fun RegistroScreen(
             } else {
                 Button(
                     onClick = {
+                        // Validaciones locales antes de enviar
                         if (nombreUsuario.isBlank() || correo.isBlank() || password.isBlank()) {
-                            Toast.makeText(context, "Faltan datos", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Faltan datos obligatorios", Toast.LENGTH_SHORT).show()
                         } else if (password != repetirPassword) {
                             Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
                         } else if (!aceptaTerminos) {
                             Toast.makeText(context, "Debes aceptar los términos", Toast.LENGTH_SHORT).show()
+
                         } else {
-                            authViewModel.registrar(nombreUsuario, correo, password)
+
+                            authViewModel.registrar(nombreUsuario, codigopostal,correo, password)
                         }
                     },
                     modifier = Modifier
@@ -183,7 +207,7 @@ fun RegistroScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // LINK AL LOGIN
+            // LINK AL LOGINm
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -198,6 +222,8 @@ fun RegistroScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
                         navController.navigate(AppRoute.Login.route)
+                        // Opcional: Limpiar estados al salir
+                        authViewModel.limpiarEstados()
                     }
                 )
             }
