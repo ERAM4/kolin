@@ -16,5 +16,6 @@ data class User(
     val username: String,
     val correo: String,
     val password: String,
-    val rol: String = "USER"
+    val rol: String = "USER",
+    val codigopostal:String
 )

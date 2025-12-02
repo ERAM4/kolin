@@ -102,15 +102,15 @@ fun CatalogScreen(
     // Lista de productos
     val productList = listOf(
         Product(1, "Teclado Mecánico RGB", "Iluminación Chroma, switches azules clicky.", 124.99, "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=500&q=60"),
-        Product(2, "Headset Pro Gamer", "Sonido envolvente 7.1 y luces LED.", 99.99, "https://images.unsplash.com/photo-1599669454699-248893623e1d?auto=format&fit=crop&w=500&q=60"),
+        Product(2, "Headset Pro Gamer", "Sonido envolvente 7.1 y luces LED.", 99.99, "https://d253gaikpmhopn.cloudfront.net/wp-content/uploads/2021/04/EPOS-Sennheiser-GSP300-Gaming-Headset-786x1024.jpg"),
         Product(3, "Silla Gamer Elite", "Diseño ergonómico para largas sesiones.", 250.00, "https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=500&q=60"),
-        Product(4, "Setup Completo", "Escritorio gamer con gestión de cables.", 450.00, "https://images.unsplash.com/photo-1593305841991-05c297f234ee?auto=format&fit=crop&w=500&q=60"),
+        Product(4, "Setup Completo", "Escritorio gamer con gestión de cables.", 450.00, "https://th.bing.com/th/id/R.0d2effe49b1471e5d22b42ba33a948bb?rik=f6Tc9HfV3%2fbKjg&pid=ImgRaw&r=0"),
         Product(5, "Mouse Ultralight", "Sensor óptico de alta precisión, RGB.", 49.99, "https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=500&q=60"),
         Product(6, "Monitor Curvo 144Hz", "Inmersión total con panel 4K.", 299.99, "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=500&q=60"),
         Product(7, "Consola Portátil", "Juega donde quieras con máxima potencia.", 350.00, "https://images.unsplash.com/photo-1486401899868-0e435ed85128?auto=format&fit=crop&w=500&q=60"),
-        Product(8, "Control Pro Controller", "Mando inalámbrico con agarre texturizado.", 69.99, "https://images.unsplash.com/photo-1592840497653-a3170360a0f3?auto=format&fit=crop&w=500&q=60"),
+        Product(8, "Control Pro", "Mando inalámbrico con agarre texturizado.", 69.99, "https://cdn.gameplanet.com/wp-content/uploads/2022/09/02043111/control-rojo-negro.jpg"),
         Product(9, "Micrófono Streamer", "Calidad de estudio con filtro pop incluido.", 129.99, "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=500&q=60"),
-        Product(10, "Gafas VR Future", "Realidad virtual inmersiva 8K.", 399.00, "https://images.unsplash.com/photo-1622979135225-d2ba269fb1bd?auto=format&fit=crop&w=500&q=60")
+        Product(10, "Gafas VR Future", "Realidad virtual inmersiva 8K.", 399.00, "https://cdn.computerhoy.com/sites/navi.axelspringer.es/public/media/image/2022/11/fiyapoo-2864545.jpg?tf=1200x")
     )
 
     // Llamamos a la versión Visual

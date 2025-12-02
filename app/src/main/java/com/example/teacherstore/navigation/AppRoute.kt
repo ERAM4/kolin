@@ -5,7 +5,6 @@ sealed class AppRoute(val route:String) {
 
     // CAMBIO AQUÍ: De 'Register' a 'Registro' para que coincida con LoginScreen y tu archivo .kt
     data object Registro: AppRoute("register")
-
     data object Profile: AppRoute("profile")
     data object Settings: AppRoute("settings")
     data object Help: AppRoute("help")

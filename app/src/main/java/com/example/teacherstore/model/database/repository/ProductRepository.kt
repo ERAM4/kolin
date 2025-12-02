@@ -13,6 +13,9 @@ class ProductRepository(private val productDao: ProductDao){
         productDao.insertProduct(product)
     }
 
+    suspend fun deleteAll() {
+        productDao.deleteAllProducts()
+    }
     suspend fun deleteProductPerId(id: Int){
         productDao.deleteProduct(id)
     }

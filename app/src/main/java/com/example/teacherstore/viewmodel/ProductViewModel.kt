@@ -20,7 +20,12 @@ class ProductViewModel(private val productRepository: ProductRepository): ViewMo
     fun deleteProductPerId(id: Int) = viewModelScope.launch {
         productRepository.deleteProductPerId(id)
     }
-
+    fun clearCart() {
+        viewModelScope.launch {
+            // Usamos 'productRepository', que es el que declaraste arriba en el constructor
+            productRepository.deleteAll()
+        }
+    }
 
     class DataProductViewModelFactory(private val productRepository: ProductRepository) : ViewModelProvider.Factory{
 

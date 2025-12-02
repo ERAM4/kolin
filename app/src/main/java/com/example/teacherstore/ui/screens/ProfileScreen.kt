@@ -67,7 +67,6 @@ fun ProfileScreen(
     // --- LÓGICA DE LA CÁMARA (Sin cambios, solo funciona) ---
     var currentPhotoUri by remember { mutableStateOf<Uri?>(null) }
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
-
     fun createImageFile(): File? {
         return try {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
@@ -78,14 +77,12 @@ fun ProfileScreen(
             null
         }
     }
-
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) currentPhotoUri = tempImageUri
         }
     )
-
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { permissions ->

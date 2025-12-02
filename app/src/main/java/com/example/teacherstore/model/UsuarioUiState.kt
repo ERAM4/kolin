@@ -14,9 +14,7 @@ data class UsuarioUiState(
     val correo: String = "",
     val contrasena: String = "",
     val repetirContrasena: String = "",
-
-    // Eliminados: direccion y pais (Tu backend no los tiene)
-
+    val codigopostal:String="",
     val aceptaTerminos: Boolean = false,
     val errores: UsuarioErrores = UsuarioErrores()
 )
@@ -26,7 +24,8 @@ data class UsuarioErrores(
     val username: String? = null,
     val correo: String? = null,
     val contrasena: String? = null,
-    val repetirContrasena: String? = null
+    val repetirContrasena: String? = null,
+    val codigopostal: String?=null
 
-    // Eliminados: direccion y pais
+
 )

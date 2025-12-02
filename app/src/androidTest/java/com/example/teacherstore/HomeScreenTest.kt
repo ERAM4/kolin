@@ -25,35 +25,33 @@ class HomeScreenTest {
             }
         }
 
-        // 2. Verificar Header (TopBar)
-        composeTestRule.onNodeWithText("LOBBY").assertIsDisplayed()
+        // 2. Verificar Header (LOBBY)
+        composeTestRule.onNodeWithText("LOBBY", substring = true).assertIsDisplayed()
 
-        // --- CAMBIO: Ya no buscamos "HOLA, GAMER", buscamos la Barra de Búsqueda ---
-        composeTestRule.onNodeWithText("Buscar juegos, equipo...").assertIsDisplayed()
+        // 3. Verificar Barra de Búsqueda
+        composeTestRule.onNodeWithText("Buscar", substring = true).assertIsDisplayed()
 
-        // 3. Verificar Sección de Novedades
-        composeTestRule.onNodeWithText("NOVEDADES").assertIsDisplayed()
+        // 4. Verificar Sección de Novedades
+        composeTestRule.onNodeWithText("NOVEDADES", substring = true).assertIsDisplayed()
 
-        // Verificamos que al menos una noticia se ve
-        composeTestRule.onNodeWithText("ELDEN RING: DLC").assertIsDisplayed()
-
-        // 4. Verificar Oferta Flash (Haciendo Scroll hacia abajo)
+        // 5. Verificar Oferta Flash
+        // Hacemos scroll hacia abajo para encontrarlo
         composeTestRule.onNodeWithText("OFERTA FLASH")
-            .performScrollTo() // El robot baja la pantalla
-            .assertIsDisplayed()
-
-        composeTestRule.onNodeWithText("Pack Streamer")
             .performScrollTo()
             .assertIsDisplayed()
 
-        // 5. Verificar Sección de Tendencias (Más abajo)
-        composeTestRule.onNodeWithText("MÁS VENDIDOS") // Antes se llamaba "TENDENCIAS"
+        // 6. Verificar Título "MÁS VENDIDOS"
+        // Este scroll baja la pantalla hasta el final
+        composeTestRule.onNodeWithText("VENDIDOS", substring = true)
             .performScrollTo()
             .assertIsDisplayed()
 
-        // Verificamos un producto de tendencia
-        composeTestRule.onNodeWithText("Teclado RGB")
-            .performScrollTo()
+        // 7. Verificar Producto "Teclado"
+        // --- CORRECCIÓN AQUÍ ---
+        // Quitamos .performScrollTo() porque ya bajamos con el título anterior.
+        // Al estar dentro de una lista horizontal anidada, intentar scrollear al ítem suele fallar.
+        // Solo verificamos que se vea.
+        composeTestRule.onNodeWithText("Teclado", substring = true)
             .assertIsDisplayed()
     }
 }

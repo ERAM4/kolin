@@ -24,5 +24,7 @@ data class Usuario(
 
     // Coincide con 'private String rol'.
     // Le pongo valor por defecto "USUARIO" para que no crashee si no lo envías desde la UI.
-    val rol: String = "USER"
+    val rol: String = "USER",
+
+    val codigopostal:String,
 )
