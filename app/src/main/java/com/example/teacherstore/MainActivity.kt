@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                 val mainViewModel: MainViewModel = viewModel()
                 val navController = rememberNavController()
 
-                // Configuración dRoom (Base de datos local)
+                // Configuración Room (Base de datos local)
                 val userDataBase = UserDataBase.getDataBase(this)
                 val userRepository = UserRepository(userDataBase.userDao())
                 val userFactory = UsuarioViewModel.UsuarioViewModelFactory(userRepository)
