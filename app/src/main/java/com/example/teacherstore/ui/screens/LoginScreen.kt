@@ -95,7 +95,7 @@ fun LoginScreen(
             } else {
                 Button(
                     onClick = {
-                        // AQUÍ SE DISPARA LA CONEXIÓN
+                        // AQUÍ  DISPARA LA CONEXIÓN
                         if (correo.isNotBlank() && password.isNotBlank()) {
                             authViewModel.login(correo, password)
                         } else {

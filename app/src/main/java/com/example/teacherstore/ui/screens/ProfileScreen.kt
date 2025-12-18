@@ -123,7 +123,7 @@ fun ProfileScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background, // Fondo Oscuro
 
-        // BARRA INFERIOR (Bottom Bar) estilizada
+        // BARRA INFERIOR (Bottom Bar)
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface, // Gris oscuro

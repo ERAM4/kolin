@@ -184,7 +184,7 @@ fun HomeScreen(
     }
 }
 
-// --- COMPONENTES VISUALES ---
+// --- COMPONENTES VISUALES --
 
 @Composable
 fun SearchBarFake(onClick: () -> Unit) {

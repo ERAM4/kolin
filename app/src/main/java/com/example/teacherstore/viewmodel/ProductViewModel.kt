@@ -22,7 +22,7 @@ class ProductViewModel(private val productRepository: ProductRepository): ViewMo
     }
     fun clearCart() {
         viewModelScope.launch {
-            // Usamos 'productRepository', que es el que declaraste arriba en el constructor
+            // Usamo 'productRepository', que es el que declaraste arriba en el constructor
             productRepository.deleteAll()
         }
     }

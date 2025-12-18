@@ -90,7 +90,7 @@ fun ProductItem(
     }
 }
 
-// 2. PANTALLA INTELIGENTE (Conecta ViewModel con la Vista)
+
 @Composable
 fun CatalogScreen(
     navController: NavController,

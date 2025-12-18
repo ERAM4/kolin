@@ -154,7 +154,7 @@ fun RegistroContent(
             }
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón
+            // Boton
             if (isLoading) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else {

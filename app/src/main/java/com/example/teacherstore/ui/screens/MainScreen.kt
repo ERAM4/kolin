@@ -47,7 +47,7 @@ fun MainScreen(
             verticalArrangement = Arrangement.Center
         ) {
 
-            // TÍTULO GRANDE Y CYAN
+            // TÍTULO GRANDE
             Text(
                 text = "LEVEL UP-GAMER",
                 color = MaterialTheme.colorScheme.primary, // NeonCyan
